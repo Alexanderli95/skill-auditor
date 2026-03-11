@@ -14,6 +14,7 @@ Skill Auditor is designed to help developers and users verify the safety of thir
 - **Full Disk Scan Alert**: Detects attempts to recursively scan the entire file system (e.g., `/` or `~`).
 - **File Deletion Warning**: Warns about destructive file operations (e.g., `rm -rf`, `shutil.rmtree`).
 - **Obfuscation Detection**: Checks for base64 decoding and other common obfuscation techniques used to hide malicious code.
+- **Prompt Auditing**: Dumps markdown documentation to allow LLM-based analysis of malicious instructions (e.g., phishing, data exfiltration).
 
 ## 🚀 Installation
 
@@ -38,11 +39,13 @@ You can invoke this skill in your Trae chat by asking:
 
 ### Manual Execution
 
-The core logic is contained in a Python script that can also be run standalone:
+The core logic is contained in a Python script that can also be run standalone: 
 
 ```bash
-python scripts/audit_check.py <path_to_target_directory>
+python scripts/audit_check.py <path_to_target_directory> [--read-md]
 ```
+
+Use `--read-md` to dump the content of all markdown files for manual or LLM review.
 
 ### Example Output
 

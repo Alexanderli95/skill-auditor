@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import argparse
 
 SUSPICIOUS_PATTERNS = {
     "sensitive_info": [
@@ -60,12 +61,28 @@ def scan_directory(directory):
                 all_issues.extend(issues)
     return all_issues
 
+def dump_md_files(directory):
+    print(f"\nScanning for .md files in: {directory}")
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(".md"):
+                filepath = os.path.join(root, file)
+                print(f"\n--- START OF FILE: {filepath} ---")
+                try:
+                    with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+                        print(f.read())
+                except Exception as e:
+                    print(f"Error reading {filepath}: {e}")
+                print(f"--- END OF FILE: {filepath} ---")
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python audit_check.py <directory_to_scan>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Audit a directory for security risks.")
+    parser.add_argument("directory", help="Directory to scan")
+    parser.add_argument("--read-md", action="store_true", help="Dump content of all .md files for LLM analysis")
     
-    target_dir = sys.argv[1]
+    args = parser.parse_args()
+    target_dir = args.directory
+
     if not os.path.exists(target_dir):
         print(f"Directory not found: {target_dir}")
         sys.exit(1)
@@ -82,3 +99,6 @@ if __name__ == "__main__":
             print("-" * 40)
     else:
         print("No suspicious patterns found.")
+
+    if args.read_md:
+        dump_md_files(target_dir)
